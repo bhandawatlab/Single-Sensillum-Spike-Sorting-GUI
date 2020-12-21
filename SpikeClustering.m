@@ -13,6 +13,9 @@ function [peakAll,SpikesAllV,Stimulus,IdxInCluster,window,fs] = SpikeClustering(
 %
 % Liangyu Tao 2017
 
+% remove findpeaks warning (can comment out if you want to)
+warning('off','signal:findpeaks:largeMinPeakHeight')
+
 if isempty(voltageTrace)
     load('TrialData.mat')
     voltageTrace = DataBS;
@@ -29,7 +32,7 @@ for i = 1:length(voltageTrace)/baselineLen
 end
 
 % Aligning spikes
-window = 31;
+window = 0.0030.*fs+1;%+/- 15 ms
 SpikesAll = zeros(length(peakAll),window);
 SpikesAll(:,ceil(window/2)) = peakAll;
 for i = 1:floor(window/2)

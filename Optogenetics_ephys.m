@@ -18,7 +18,7 @@ params.sampleRate = 10000 ; % hz
 fromEphys.numberofsamples = params.numsecs*params.sampleRate;
 
 % prep data file
-rootdir = ['F:\Liangyu Tao\Electrophys\Liangyu Data\' datestr(date, 'yymmdd'),'Data'];
+rootdir = [pwd '\' datestr(date, 'yymmdd'),'Data'];
 exptag = [datestr(now,'yymmdd') '_' experiment_number];
 
 mkdir(rootdir); % make root directory

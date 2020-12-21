@@ -1,4 +1,4 @@
-function [] = SpikeSortingGUI()
+function [] = MainGUI()
 % SpikeSortingGUI Comments/Documentations
 
 %  Create and then hide the UI as it is being constructed.
@@ -9,6 +9,7 @@ currentFolder = pwd;
 addpath(currentFolder)
 close all
 fileName = [];fileNameStim = [];IdxInClusterUpdated = cell(1,6);
+fileNameStim_name = [];fs = [];
 global fromEphys
 global DataExp
 global tog
@@ -219,6 +220,7 @@ hs = addcomponents;
         [FileName,PathName] = uigetfile('*.mat','Select the Stim file','F:\Liangyu Tao\Electrophys\Liangyu Data\180124Data\180124_0');
         
         fileName = {[PathName FileName]};
+        fileNameStim_name = FileName;
     end
 
     function loadStim(hObject,event)
@@ -233,6 +235,7 @@ hs = addcomponents;
         %fileNameStim = inputdlg(prompt,dlg_title,num_lines,defaultans);
         [FileName,PathName] = uigetfile('*.mat','Select the Stim file','F:\Liangyu Tao\Electrophys\IntensityData\');
         fileNameStim = {[PathName FileName]};
+        fileNameStim_name = FileName;
     end
 
     function [voltageBS,peakAll,SpikesAllV,Stimulus,IdxInCluster] = plotData(hObject,event)
@@ -243,7 +246,7 @@ hs = addcomponents;
             fHandle = hs;
             [voltageBS] = BaselineSubtraction(Data);
             [peakAll,SpikesAllV,Stimulus,IdxInCluster] = SpikeClustering(voltageBS,Data.Stimulus,fs,vis);
-            PlottingFunctionsGUI(voltageBS,peakAll,SpikesAllV,Stimulus,IdxInCluster,fHandle);
+            PlottingFunctionsGUI(voltageBS,peakAll,SpikesAllV,Stimulus,IdxInCluster,fHandle,fs,fileNameStim_name);
             Data.voltageBS = voltageBS;
         elseif isfield(D, 'DataExp')
             Data = D.DataExp;
@@ -251,7 +254,7 @@ hs = addcomponents;
             fHandle = hs;
             [voltageBS] = BaselineSubtraction(Data);
             [peakAll,SpikesAllV,Stimulus,IdxInCluster] = SpikeClustering(voltageBS,Data.Stimulus,fs,vis);
-            PlottingFunctionsGUI(voltageBS,peakAll,SpikesAllV,Stimulus,IdxInCluster,fHandle);
+            PlottingFunctionsGUI(voltageBS,peakAll,SpikesAllV,Stimulus,IdxInCluster,fHandle,fs,fileNameStim_name);
             Data.voltageBS = voltageBS;
         end
         tog = 1;
@@ -261,14 +264,37 @@ hs = addcomponents;
         S = load(fileNameStim{1});
         StimType = hs.pm.Value;
         currStim = [];
-        if isfield(S,'VBroken')
+        if isfield(S,'V')
             cla(hs.ax)
-            %currStim = S.VBroken{StimType};
-            %currStim = S.trackRecord{StimType};
-            %currStim = S.VBroken604;
-            currStim = S.V;
-            plot(hs.ax,currStim)
+            
+            if isfield(S,'fs')
+                fs = S.fs;
+            else
+                fs = 10000;
+            end
+            if iscell(S.V)
+                currStim = S.V{StimType};
+            else
+                currStim = S.V;
+            end
+            plot(hs.ax,(1:numel(currStim))./fs,currStim,'Linewidth',2);
+            xlabel(hs.ax,'time (s)');ylabel(hs.ax,'stimulus (V)')
+            xlim(hs.ax,[0 numel(currStim)./fs])
         end
+        
+%         if isfield(S,'V')%VBroken
+%             cla(hs.ax)
+%             %currStim = S.VBroken{StimType};
+%             %currStim = S.trackRecord{StimType};
+%             %currStim = S.VBroken604;
+%             if isfield(S,'fs')
+%                 fs = S.fs;
+%             else
+%                 fs = 10000;
+%             end
+%             currStim = S.V;
+%             plot(hs.ax,currStim)
+%         end
     end
 
     function updateCluster(hObject,event)
@@ -290,7 +316,8 @@ hs = addcomponents;
         end
         fHandle = hs;
         if ~all(cellfun('isempty',IdxInClusterUpdated))
-            PlottingFunctionsGUI(DataBS,peakAll,SpikesAllV,Stimulus,IdxInClusterUpdated,fHandle);
+            PlottingFunctionsGUI(DataBS,peakAll,SpikesAllV,Stimulus,IdxInClusterUpdated,fHandle,fs,fileNameStim_name);
+            %PlottingFunctionsGUI(DataBS,peakAll,SpikesAllV,Stimulus,IdxInClusterUpdated,fHandle);
         end
     end
 
@@ -303,6 +330,7 @@ hs = addcomponents;
             %Optogenetics_ephys(currStim,fileNameStim{1},hs.pm.Value);
             Optogenetics_ephys(currStim,fileNameStim{1},hs.pm.Value);
         end
+        pause(1);
         set(hs.t, 'String', 'Current Status: Standby');
     end
 
@@ -312,7 +340,7 @@ hs = addcomponents;
             fHandle = hs;
             [voltageBS] = BaselineSubtraction(DataExp);
             [peakAll,SpikesAllV,Stimulus,IdxInCluster] = SpikeClustering(voltageBS,DataExp.Stimulus,fs,vis);
-            PlottingFunctionsGUI(voltageBS,peakAll,SpikesAllV,Stimulus,IdxInCluster,fHandle);
+            PlottingFunctionsGUI(voltageBS,peakAll,SpikesAllV,Stimulus,IdxInCluster,fHandle,fs,'Recent Experiment');
             DataExp.IdxInCluster = IdxInCluster;
             DataExp.voltageBS = voltageBS;
             DataExp = orderfields(DataExp);
