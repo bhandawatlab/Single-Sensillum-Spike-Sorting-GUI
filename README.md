@@ -2,7 +2,7 @@
 
 Graphical User Interface (GUI) used to:
 1. Perform single sensillum recordings with user specified optogenetic stimulation.
-2. Perform single sensillum recordings with user specified optogenetic stimulation.
+2. Perform user guided spike sorting using wavelet transforms
 
 ## Getting Started
 

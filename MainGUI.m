@@ -6,7 +6,7 @@ function [] = MainGUI()
 % hsurf    = uicontrol('Style','pushbutton',...
 %     'String','Surf','Position',[x*1.2,y,70,25]);
 currentFolder = pwd;
-addpath(currentFolder)
+addpath(genpath(currentFolder))
 close all
 fileName = [];fileNameStim = [];IdxInClusterUpdated = cell(1,6);
 fileNameStim_name = [];fs = [];
