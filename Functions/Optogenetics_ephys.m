@@ -1,4 +1,4 @@
-function [] = Optogenetics_ephys(stim,stimFile,stimType)
+function [fromEphys,DataExp] = Optogenetics_ephys(stim,stimFile,stimType)
 % path = 'F:\Liangyu Tao\Electrophys\Liangyu Data\Intensity_Data\';
 % stimFile = '170607_1_2_Stim_Train.mat';
 % load([path stimFile])
@@ -13,6 +13,7 @@ global s
 experiment_number = '1' ;                                                   % experiment number, change
 params.numsecs = 360 ; % for each trial
 params.sampleRate = 10000 ; % hz
+fromEphys.sampleRate = params.sampleRate;
 
 % from params
 fromEphys.numberofsamples = params.numsecs*params.sampleRate;
