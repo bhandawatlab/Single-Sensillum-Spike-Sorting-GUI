@@ -35,6 +35,8 @@ SpikesAllV = voltageBS(SpikesAll);
 if numel(spkNdx)==1
     SpikesAllV = SpikesAllV';
 end
+% baseline subtract average of each spike
+SpikesAllV = SpikesAllV-mean(SpikesAllV,2);
 
 
 end
